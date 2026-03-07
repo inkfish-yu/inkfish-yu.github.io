@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map(post => ({
+    params: { slug: post.data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-\u4e00-\u9fff]/g, '') },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+<Base title={post.data.title}>
+  <article>
+    <h2>{post.data.title}</h2>
+    <p class="date">{post.data.date.slice(0, 10)}</p>
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+  <p><a href="/">← 回去</a></p>
+</Base>
